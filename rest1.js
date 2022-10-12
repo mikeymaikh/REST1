@@ -72,7 +72,7 @@ app.use(function (req, res, next) {
 app.get("/sanakirja", (req, res) => {
   res.json(sanakirja); //palautetaan sanakirja taulukko json muodossa
 });
-
+//test
 app.post("/sanakirja", (req, res) => {
 
   console.log(req.body);
