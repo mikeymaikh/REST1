@@ -17,40 +17,29 @@ splitLines.forEach((line) => {
     eng: sanat[1],
   };
 
-
   sanakirja.push(sana);
 });
 
 console.log(sanakirja);
-app.use(express.json()); //käytetään json muotoa
-app.use(express.urlencoded({ extended: true })); //käytetään tiedonsiirrossa laajennettua muotoa
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 
-//CORS asetukset
 app.use(function (req, res, next) {
-  // Website you wish to allow to connect
   res.setHeader("Access-Control-Allow-Origin", "*");
-  // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
   );
-
-  // Request headers you wish to allow
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token"
   );
 
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader("Content-type", "application/json");
   next();
 });
 
-app.get("/sanakirja", (req, res) => {
-  res.json(sanakirja); //palautetaan sanakirja taulukko json muodossa
-});
 
 app.post("/sanakirja", (req, res) => {
 
@@ -69,4 +58,33 @@ app.post("/sanakirja", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+});
+
+
+//Luodaan haku parametriin
+
+app.param("sana", function (req, res, next, sana) {
+  const modified = sana.toLowerCase();
+  req.sana = modified;
+  next();
+});
+
+//Haetaan parametrinen tieto
+app.get("/sanakirja/:sana", function(req, res) {
+
+  const request = req.sana;
+  const splitLines = data.split(/\r?\n/);
+
+  splitLines.forEach((line) => {
+    const sanat = line.split(" ");
+    const finSana = {
+      fin: sanat[0]
+    };
+    const engSana = {
+      eng: sanat[1]
+    };
+    if (request == finSana.fin) {
+      res.json(engSana.eng);
+    }
+  });
 });
