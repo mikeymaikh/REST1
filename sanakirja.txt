@@ -1,2 +1,4 @@
 auto car
 talo house
+pähkinä nut
+maa earth
