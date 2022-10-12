@@ -14,7 +14,6 @@ const splitLines = data.split(/\r?\n/);
 
 splitLines.forEach((line) => {
   const sanat = line.split(" ");
-  //console.log(sanat);
 
   const sana = {
     fin: sanat[0],
@@ -22,14 +21,12 @@ splitLines.forEach((line) => {
     eng: sanat[1],
   };
 
-  //console.log(sana);
 
   sanakirja.push(sana);
 });
 
 console.log(sanakirja);
 
-//console.log(splitLines);
 
 app.use(express.json()); //käytetään json muotoa
 
@@ -72,10 +69,20 @@ app.use(function (req, res, next) {
 app.get("/sanakirja", (req, res) => {
   res.json(sanakirja); //palautetaan sanakirja taulukko json muodossa
 });
-//test
+
 app.post("/sanakirja", (req, res) => {
 
-  console.log(req.body);
+  const sanapari = req.body;
+  sanakirja.push(sanapari);
+
+  try {
+    data += `n${sanapari.fin} ${sanapari.eng}`;
+    fs.writeFileSync("./sanakirja.txt", data);
+    return res.status(201).json(sanapari);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(err);
+  }
 });
 
 app.listen(port, () => {
