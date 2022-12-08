@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+      $(document).ready(() => {
+
+        $('[name="Hae"]').click(() => {
+          $.get(`http://localhost:3000?sana=${$("#fiHae").val()}`, ({ en }) =>
+            $("#engSana").text(en)
+          );
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Hae sanoja</h1>
+    <li><a class="active" href="etusivu.html">Etusivu</a></li>
+    <li><a class="active" href="haku.html">Hae sanoja</a></li>
+    <li><a href="lisays.html">Lisää sanoja</a></li>
+    <br />
+    <tr>
+      <th>Suomenkielinen sana</th>
+    </tr>
+    <tr>
+      <td>
+        <input
+          name="fiHae"
+          id="fiHae"
+          type="text"
+          value=""
+          maxlength="35"
+          size="35"
+        />
+      </td>
+    </tr>
+      <td>
+        <input name="Hae" type="button" value="Hae" />
+      </td>
+    </tr>
+
+    <br />
+    <br />
+    <tr>
+      <th>Englanninkielinen sana</th>
+      <p id="engSana"></p>
+    </tr>
+  </body>
+</html>

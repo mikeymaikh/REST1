@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+  </style>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(() => {
+        $.get("http://localhost:3000/", (sanat) => {
+          const $fiSanat = $("#fiSanat");
+          const $enSanat = $("#enSanat");
+
+          sanat.forEach(({ fi, en }) => {
+            $(`<p>${fi}</p>`).appendTo($fiSanat);
+            $(`<p>${en}</p>`).appendTo($enSanat);
+          });
+        });
+
+        $('[name="Tallenna"]').click(() => {
+          $.post(
+            `http://localhost:3000?fi=${$("#fiTallenna").val()}&en=${$(
+              "#enTallenna"
+            ).val()}`
+          );
+          location.reload();
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <h1>Lisää sanoja</h1>
+    <li><a class="active" href="etusivu.html">Etusivu</a></li>
+    <li><a class="active" href="haku.html">Hae sanoja</a></li>
+    <li><a href="lisays.html">Lisää sanoja</a></li>
+    <br />
+  </body>
+
+  <body>
+    <th>Tallenna sanoja</th>
+    <td>
+      <input
+        name="fiTallenna"
+        id="fiTallenna"
+        type="text"
+        value=""
+        maxlength="35"
+        size="35"
+      />
+    </td>
+    <td>
+      <input
+        name="enTallenna"
+        id="enTallenna"
+        type="text"
+        value=""
+        maxlength="35"
+        size="35"
+      />
+    </td>
+    <td><input name="Tallenna" type="button" value="Tallenna" /></td>
+    <br />
+    <table style="width: 40%">
+      <tr>
+        <th>Lista suomenkielisistä sanoista</th>
+        <th>Lista englanninkielisistä sanoista</th>
+      </tr>
+      <tr>
+        <td><p id="fiSanat"></p></td>
+        <td><p id="enSanat"></p></td>
+      </tr>
+    </table>
+  </body>
+</html>

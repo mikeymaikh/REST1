@@ -1,90 +1,80 @@
-const express = require("express");
 const fs = require("fs");
+const express = require("express");
 const app = express();
 const port = 3000;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-let sanakirja = [];
-
-let data = fs.readFileSync("./sanakirja.txt", { encoding: "utf8", flag: "r" });
-
-const splitLines = data.split(/\r?\n/);
-
-splitLines.forEach((line) => {
-  const sanat = line.split(" ");
-
-  const sana = {
-    fin: sanat[0],
-    eng: sanat[1],
-  };
-
-  sanakirja.push(sana);
-});
-
-console.log(sanakirja);
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true })); 
+//CORS asetukset
 
 app.use(function (req, res, next) {
+  // Website you wish to allow to connect
+
   res.setHeader("Access-Control-Allow-Origin", "*");
+
+  // Request methods you wish to allow
+
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
   );
+
+  // Request headers you wish to allow
+
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token"
   );
 
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader("Content-type", "application/json");
+
   next();
 });
+//end CORS
 
+app.post("/", function (req, res) {
+  const fi = req.query.fi;
+  const en = req.query.en;
 
-app.post("/sanakirja", (req, res) => {
-
-  const sanapari = req.body;
-  sanakirja.push(sanapari);
-
-  try {
-    data += `\n${sanapari.fin} ${sanapari.eng}`;
-    fs.writeFileSync("./sanakirja.txt", data);
-    return res.status(201).json(sanapari);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json(err);
+  if (fi && en) {
+    try {
+      fs.appendFileSync("./sanakirja.txt",\n${fi} ${en});
+    } catch (err) {
+      res.sendStatus(500);
+    }
+    res.status(201).send('${fi} ${en}');
+  } else {
+    res.sendStatus(400);
   }
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+app.get("/", function (req, res) {
+  const sana = req.query.sana;
 
+  try {
+    const data = fs.readFileSync("./sanakirja.txt", "utf8");
+    const sanat = data.split("\n").map((str) => {
+      const [fi, en] = str.split(" ");
 
-//Luodaan haku parametriin
-
-app.param("sana", function (req, res, next, sana) {
-  const modified = sana.toLowerCase();
-  req.sana = modified;
-  next();
-});
-
-//Haetaan parametrinen tieto
-app.get("/sanakirja/:sana", function(req, res) {
-
-  const request = req.sana;
-  const splitLines = data.split(/\r?\n/);
-
-  splitLines.forEach((line) => {
-    const sanat = line.split(" ");
-    const finSana = {
-      fin: sanat[0]
-    };
-    const engSana = {
-      eng: sanat[1]
-    };
-    if (request == finSana.fin) {
-      res.json(engSana.eng);
+      return { fi, en };
+    });
+    if (sana) {
+      const tulos = sanat.find((s) => s.fi === sana);
+      if (tulos) {
+        res.status(200).send(tulos);
+      }
+    } else {
+      res.status(200).send(sanat);
     }
-  });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.listen(port, function () {
+  console.log(Server is listening on port ${port});
 });
